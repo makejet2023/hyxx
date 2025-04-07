@@ -63,19 +63,24 @@ export default function ProgressPage() {
     );
   }
 
+  const totalPhrases = scenes.reduce(
+    (total, scene) => total + scene.dialogues.length,
+    0
+  );
+
   return (
     <div className="max-w-6xl mx-auto space-y-8">
       <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold">学习进度</h1>
-        <p className="text-xl text-gray-600">查看你的学习情况和完成率</p>
+        <h1 className="text-4xl font-bold">Learning Progress</h1>
+        <p className="text-xl text-gray-600">Track your learning progress and completion rate</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold mb-4">总体进度</h2>
+          <h2 className="text-2xl font-semibold mb-4">Overall Progress</h2>
           <div className="space-y-4">
             <div className="flex justify-between items-center">
-              <span className="text-gray-600">完成率</span>
+              <span className="text-gray-600">Completion Rate</span>
               <span className="text-2xl font-bold text-blue-500">
                 {completionRate.toFixed(1)}%
               </span>
@@ -90,7 +95,7 @@ export default function ProgressPage() {
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold mb-4">练习历史</h2>
+          <h2 className="text-2xl font-semibold mb-4">Practice History</h2>
           <div className="space-y-4">
             {progress.length > 0 ? (
               progress.map((item) => {
@@ -110,10 +115,10 @@ export default function ProgressPage() {
                       </div>
                       <div className="text-right">
                         <p className="text-sm text-gray-500">
-                          上次练习: {item.lastPracticed.toLocaleDateString()}
+                          Last practiced: {item.lastPracticed.toLocaleDateString()}
                         </p>
                         <p className="text-sm">
-                          正确: {item.correctCount} | 错误: {item.incorrectCount}
+                          Correct: {item.correctCount} | Incorrect: {item.incorrectCount}
                         </p>
                       </div>
                     </div>
@@ -121,7 +126,7 @@ export default function ProgressPage() {
                 );
               })
             ) : (
-              <p className="text-gray-500 text-center">暂无练习记录</p>
+              <p className="text-gray-500 text-center">No practice records yet</p>
             )}
           </div>
         </div>

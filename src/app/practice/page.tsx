@@ -10,107 +10,102 @@ type PracticeType = 'translation' | 'listening' | 'speaking' | 'matching';
 
 export default function PracticePage() {
   const [currentDialogue, setCurrentDialogue] = useState<Dialogue | null>(null);
-  const [selectedType, setSelectedType] = useState<PracticeType>('translation');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [selectedType, setSelectedType] = useState<PracticeType | null>(null);
 
   useEffect(() => {
-    loadRandomDialogue();
-  }, []);
-
-  const loadRandomDialogue = () => {
-    try {
+    if (selectedType) {
       const allDialogues = scenes.flatMap(scene => scene.dialogues);
       const randomIndex = Math.floor(Math.random() * allDialogues.length);
       setCurrentDialogue(allDialogues[randomIndex]);
-      setLoading(false);
-    } catch (err) {
-      setError('Failed to load dialogue');
-      setLoading(false);
     }
-  };
+  }, [selectedType]);
 
   const handleTypeSelect = (type: PracticeType) => {
     setSelectedType(type);
   };
 
   const handleNext = () => {
-    loadRandomDialogue();
+    const allDialogues = scenes.flatMap(scene => scene.dialogues);
+    let randomIndex;
+    let nextDialogue;
+
+    do {
+      randomIndex = Math.floor(Math.random() * allDialogues.length);
+      nextDialogue = allDialogues[randomIndex];
+    } while (nextDialogue.id === currentDialogue?.id);
+
+    setCurrentDialogue(nextDialogue);
   };
 
-  if (loading) {
-    return <LoadingSpinner />;
-  }
-
-  if (error || !currentDialogue) {
+  if (!selectedType) {
     return (
-      <div className="text-center py-8">
-        <p className="text-red-500">{error || 'Failed to load dialogue'}</p>
+      <div className="max-w-6xl mx-auto space-y-8">
+        <div className="text-center space-y-4">
+          <h1 className="text-4xl font-bold">Practice</h1>
+          <p className="text-xl text-gray-600">Select a practice type to begin</p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              <button
+                onClick={() => handleTypeSelect('translation')}
+                className={`p-4 rounded-lg ${
+                  selectedType === 'translation'
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Translation Practice
+              </button>
+              <button
+                onClick={() => handleTypeSelect('listening')}
+                className={`p-4 rounded-lg ${
+                  selectedType === 'listening'
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Listening Practice
+              </button>
+              <button
+                onClick={() => handleTypeSelect('speaking')}
+                className={`p-4 rounded-lg ${
+                  selectedType === 'speaking'
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Speaking Practice
+              </button>
+              <button
+                onClick={() => handleTypeSelect('matching')}
+                className={`p-4 rounded-lg ${
+                  selectedType === 'matching'
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Matching Practice
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
 
+  if (!currentDialogue) {
+    return <LoadingSpinner />;
+  }
+
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
-      <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold">练习</h1>
-        <p className="text-xl text-gray-600">选择练习类型开始学习</p>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="space-y-6">
-          <div className="grid grid-cols-2 gap-4">
-            <button
-              onClick={() => handleTypeSelect('translation')}
-              className={`p-4 rounded-lg ${
-                selectedType === 'translation'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              翻译练习
-            </button>
-            <button
-              onClick={() => handleTypeSelect('listening')}
-              className={`p-4 rounded-lg ${
-                selectedType === 'listening'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              听力练习
-            </button>
-            <button
-              onClick={() => handleTypeSelect('speaking')}
-              className={`p-4 rounded-lg ${
-                selectedType === 'speaking'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              口语练习
-            </button>
-            <button
-              onClick={() => handleTypeSelect('matching')}
-              className={`p-4 rounded-lg ${
-                selectedType === 'matching'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              配对练习
-            </button>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <PracticeCard
-            dialogue={currentDialogue}
-            practiceType={selectedType}
-            onNext={handleNext}
-          />
-        </div>
-      </div>
+    <div className="max-w-6xl mx-auto">
+      <PracticeCard
+        dialogue={currentDialogue}
+        onNext={handleNext}
+        practiceType={selectedType}
+      />
     </div>
   );
 } 

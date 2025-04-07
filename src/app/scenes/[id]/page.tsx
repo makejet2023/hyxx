@@ -58,23 +58,10 @@ export default function ScenePage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {scene.dialogues.map((dialogue) => (
-          <div key={dialogue.id} className="bg-white rounded-lg shadow p-4">
-            <div className="space-y-2">
-              <p className="text-lg font-medium">{dialogue.chinese}</p>
-              <p className="text-gray-600">{dialogue.english}</p>
-              <p className="text-gray-500 text-sm">{dialogue.pinyin}</p>
-              <div className="flex justify-between items-center mt-4">
-                <button className="text-blue-500 hover:text-blue-600">
-                  <span className="sr-only">Play audio</span>
-                  ▶
-                </button>
-                <button className="text-gray-500 hover:text-gray-600">
-                  <span className="sr-only">Share</span>
-                  Share
-                </button>
-              </div>
-            </div>
-          </div>
+          <DialogueCard
+            key={dialogue.id}
+            dialogue={dialogue}
+          />
         ))}
       </div>
     </div>

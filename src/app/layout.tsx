@@ -23,7 +23,7 @@ export default function RootLayout({
           {/* 左侧菜单 */}
           <div className="w-64 bg-white shadow-md fixed h-screen overflow-y-auto">
             <div className="p-4">
-              <h1 className="text-xl font-bold mb-6">学习场景</h1>
+              <h1 className="text-xl font-bold mb-6">Learning Scenes</h1>
               <nav className="space-y-2">
                 {scenes.map((scene) => (
                   <Link
@@ -33,7 +33,7 @@ export default function RootLayout({
                   >
                     <div className="flex items-center space-x-2">
                       <span>{scene.icon}</span>
-                      <span>{scene.titleZh}</span>
+                      <span>{scene.titleEn}</span>
                     </div>
                   </Link>
                 ))}

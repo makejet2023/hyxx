@@ -29,7 +29,11 @@ export default function Home() {
 
   return (
     <div className="space-y-8">
-      <div className="text-center space-y-4">
+      <div className="text-center space-y-6">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-400 text-white py-6 px-4 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300">
+          <h2 className="text-3xl font-bold mb-2">Master these 30 phrases and you're ready for China!</h2>
+          <p className="text-xl opacity-90">Your essential guide to communicate effectively in China</p>
+        </div>
         <h1 className="text-4xl font-bold">Essential Chinese for Travelers</h1>
         <p className="text-xl text-gray-600">Learn essential Chinese phrases for common travel situations in China</p>
       </div>

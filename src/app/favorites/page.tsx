@@ -13,6 +13,14 @@ export default function FavoritesPage() {
     setFavorites(storedFavorites);
   }, []);
 
+  const handleToggleFavorite = (dialogue: Dialogue) => {
+    setFavorites(prev => {
+      const newFavorites = prev.filter(d => d.id !== dialogue.id);
+      localStorage.setItem('favorites', JSON.stringify(newFavorites));
+      return newFavorites;
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <main className="container mx-auto px-4 py-8">
@@ -36,7 +44,12 @@ export default function FavoritesPage() {
           {favorites.length > 0 ? (
             <div className="space-y-4">
               {favorites.map((dialogue) => (
-                <DialogueCard key={dialogue.id} dialogue={dialogue} />
+                <DialogueCard 
+                  key={dialogue.id} 
+                  dialogue={dialogue} 
+                  onToggleFavorite={handleToggleFavorite}
+                  isFavorite={true}
+                />
               ))}
             </div>
           ) : (

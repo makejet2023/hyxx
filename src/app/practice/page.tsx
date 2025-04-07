@@ -6,10 +6,12 @@ import PracticeCard from '@/components/PracticeCard';
 import PracticeTypeSelector from '@/components/PracticeTypeSelector';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
+type PracticeType = 'translation' | 'listening' | 'speaking' | 'matching';
+
 export default function PracticePage() {
   const [scenes, setScenes] = useState<Scene[]>([]);
   const [currentDialogue, setCurrentDialogue] = useState<Dialogue | null>(null);
-  const [selectedType, setSelectedType] = useState('translation');
+  const [selectedType, setSelectedType] = useState<PracticeType>('translation');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,7 +46,7 @@ export default function PracticePage() {
     setCurrentDialogue(allDialogues[randomIndex]);
   };
 
-  const handleTypeSelect = (type: string) => {
+  const handleTypeSelect = (type: PracticeType) => {
     setSelectedType(type);
     // 当切换练习类型时,重新选择一个对话
     const allDialogues = scenes.flatMap(scene => scene.dialogues);

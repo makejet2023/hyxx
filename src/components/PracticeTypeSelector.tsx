@@ -1,16 +1,18 @@
-interface PracticeType {
-  id: string;
+type PracticeType = 'translation' | 'listening' | 'speaking' | 'matching';
+
+interface PracticeTypeInfo {
+  id: PracticeType;
   title: string;
   description: string;
   icon: string;
 }
 
 interface PracticeTypeSelectorProps {
-  selectedType: string;
-  onSelectType: (type: string) => void;
+  selectedType: PracticeType;
+  onSelectType: (type: PracticeType) => void;
 }
 
-const practiceTypes: PracticeType[] = [
+const practiceTypes: PracticeTypeInfo[] = [
   {
     id: 'translation',
     title: 'Translation',

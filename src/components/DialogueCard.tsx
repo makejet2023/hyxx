@@ -2,45 +2,54 @@
 
 import { useState } from 'react';
 import { Dialogue } from '@/types/scene';
-import FavoriteButton from './FavoriteButton';
-import ShareButton from './ShareButton';
-import AudioButton from './AudioButton';
 
 interface DialogueCardProps {
   dialogue: Dialogue;
-  onToggleFavorite: (dialogue: Dialogue) => void;
-  isFavorite: boolean;
 }
 
-export default function DialogueCard({ dialogue, onToggleFavorite, isFavorite }: DialogueCardProps) {
+export default function DialogueCard({ dialogue }: DialogueCardProps) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   const handlePlayAudio = () => {
     if (dialogue.audioUrl) {
-      setIsPlaying(true);
       const audio = new Audio(dialogue.audioUrl);
-      audio.onended = () => setIsPlaying(false);
       audio.play();
+      setIsPlaying(true);
+      audio.onended = () => setIsPlaying(false);
     }
   };
 
+  const handleToggleFavorite = () => {
+    setIsFavorite(!isFavorite);
+  };
+
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5 transition-all duration-300 hover:border-blue-500 dark:hover:border-blue-400">
-      <div className="flex flex-col h-full">
-        <div className="flex justify-end space-x-2 mb-4">
-          <AudioButton audioUrl={dialogue.audioUrl} />
-          <FavoriteButton 
-            dialogue={dialogue} 
-            onToggleFavorite={onToggleFavorite}
-            isFavorite={isFavorite}
-          />
-          <ShareButton dialogue={dialogue} />
+    <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+      <div className="space-y-4">
+        <div className="flex justify-between items-start">
+          <div className="space-y-2">
+            <p className="text-xl font-semibold">{dialogue.chinese}</p>
+            <p className="text-gray-600">{dialogue.pinyin}</p>
+            <p className="text-gray-800">{dialogue.english}</p>
+          </div>
+          <button
+            onClick={handleToggleFavorite}
+            className={`text-2xl ${isFavorite ? 'text-red-500' : 'text-gray-400'} hover:text-red-600 transition-colors`}
+          >
+            {isFavorite ? '❤️' : '🤍'}
+          </button>
         </div>
-        <div className="flex-1">
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">{dialogue.chinese}</h3>
-          <p className="text-lg text-gray-600 dark:text-gray-300 mb-2">{dialogue.english}</p>
-          <p className="text-base text-gray-500 dark:text-gray-400">{dialogue.pinyin}</p>
-        </div>
+
+        {dialogue.audioUrl && (
+          <button
+            onClick={handlePlayAudio}
+            disabled={isPlaying}
+            className="w-full py-2 px-4 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-400 transition-colors"
+          >
+            {isPlaying ? '播放中...' : '播放音频'}
+          </button>
+        )}
       </div>
     </div>
   );

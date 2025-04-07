@@ -1,157 +1,128 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Scene, Dialogue } from '@/types/scene';
-import { getProgress, getCompletionRate } from '@/utils/progress';
+import { scenes } from '@/data/scenes';
+import { Dialogue } from '@/types/scene';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
+interface ProgressItem {
+  dialogueId: string;
+  lastPracticed: Date;
+  correctCount: number;
+  incorrectCount: number;
+}
+
 export default function ProgressPage() {
-  const [scenes, setScenes] = useState<Scene[]>([]);
-  const [progress, setProgress] = useState<any[]>([]);
+  const [progress, setProgress] = useState<ProgressItem[]>([]);
   const [completionRate, setCompletionRate] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        const response = await fetch('/api/scenes');
-        if (!response.ok) {
-          throw new Error('Failed to load scenes');
-        }
-        const data = await response.json();
-        setScenes(data);
-        
-        const progressData = getProgress();
-        setProgress(progressData);
-        setCompletionRate(getCompletionRate());
-      } catch (error) {
-        console.error('Error loading data:', error);
-        setError('Failed to load progress data. Please try again later.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadData();
+    loadProgress();
   }, []);
 
-  const getDialogueById = (id: string): Dialogue | undefined => {
-    for (const scene of scenes) {
-      const dialogue = scene.dialogues.find(d => d.id === id);
-      if (dialogue) return dialogue;
+  const loadProgress = () => {
+    try {
+      // 从localStorage获取进度数据
+      const progressData = localStorage.getItem('progress');
+      if (progressData) {
+        const parsedProgress = JSON.parse(progressData).map((item: any) => ({
+          ...item,
+          lastPracticed: new Date(item.lastPracticed)
+        }));
+        setProgress(parsedProgress);
+        
+        // 计算完成率
+        const totalAttempts = parsedProgress.reduce(
+          (sum: number, item: ProgressItem) => sum + item.correctCount + item.incorrectCount,
+          0
+        );
+        const totalCorrect = parsedProgress.reduce(
+          (sum: number, item: ProgressItem) => sum + item.correctCount,
+          0
+        );
+        setCompletionRate(totalAttempts > 0 ? (totalCorrect / totalAttempts) * 100 : 0);
+      }
+      setLoading(false);
+    } catch (err) {
+      setError('Failed to load progress');
+      setLoading(false);
     }
-    return undefined;
   };
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto">
-          <div className="text-center">
-            <p className="text-red-600 dark:text-red-400">{error}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-              Try Again
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto">
-          <div className="text-center">
-            <LoadingSpinner size="lg" text="Loading progress data..." />
-          </div>
-        </div>
+      <div className="text-center py-8">
+        <p className="text-red-500">{error}</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            Your Learning Progress
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Track your progress and see how far you've come
-          </p>
-        </div>
+    <div className="max-w-6xl mx-auto space-y-8">
+      <div className="text-center space-y-4">
+        <h1 className="text-4xl font-bold">学习进度</h1>
+        <p className="text-xl text-gray-600">查看你的学习情况和完成率</p>
+      </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-            Overall Progress
-          </h2>
-          <div className="relative pt-1">
-            <div className="flex mb-2 items-center justify-between">
-              <div>
-                <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-blue-600 dark:text-blue-400 bg-blue-200 dark:bg-blue-900">
-                  Completion Rate
-                </span>
-              </div>
-              <div className="text-right">
-                <span className="text-xs font-semibold inline-block text-blue-600 dark:text-blue-400">
-                  {completionRate.toFixed(1)}%
-                </span>
-              </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-2xl font-semibold mb-4">总体进度</h2>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600">完成率</span>
+              <span className="text-2xl font-bold text-blue-500">
+                {completionRate.toFixed(1)}%
+              </span>
             </div>
-            <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-blue-200 dark:bg-blue-900">
+            <div className="w-full bg-gray-200 rounded-full h-4">
               <div
+                className="bg-blue-500 h-4 rounded-full transition-all duration-500"
                 style={{ width: `${completionRate}%` }}
-                className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-500"
-              ></div>
+              />
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-            Practice History
-          </h2>
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-2xl font-semibold mb-4">练习历史</h2>
           <div className="space-y-4">
-            {progress.map((p) => {
-              const dialogue = getDialogueById(p.dialogueId);
-              if (!dialogue) return null;
+            {progress.length > 0 ? (
+              progress.map((item) => {
+                const dialogue = scenes
+                  .flatMap(scene => scene.dialogues)
+                  .find(d => d.id === item.dialogueId);
 
-              return (
-                <div
-                  key={p.dialogueId}
-                  className="border-b border-gray-200 dark:border-gray-700 pb-4 last:border-b-0 last:pb-0"
-                >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-                        {dialogue.chinese}
-                      </h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {dialogue.english}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Last practiced: {new Date(p.lastPracticed).toLocaleDateString()}
-                      </p>
-                      <div className="mt-1">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 mr-2">
-                          ✓ {p.correctCount}
-                        </span>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200">
-                          ✗ {p.incorrectCount}
-                        </span>
+                return (
+                  <div
+                    key={item.dialogueId}
+                    className="border-b border-gray-200 pb-4 last:border-0"
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="font-semibold">{dialogue?.chinese}</p>
+                        <p className="text-gray-600">{dialogue?.english}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm text-gray-500">
+                          上次练习: {item.lastPracticed.toLocaleDateString()}
+                        </p>
+                        <p className="text-sm">
+                          正确: {item.correctCount} | 错误: {item.incorrectCount}
+                        </p>
                       </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })
+            ) : (
+              <p className="text-gray-500 text-center">暂无练习记录</p>
+            )}
           </div>
         </div>
       </div>

@@ -1,3 +1,50 @@
+# Essential Chinese for Travelers
+
+一个帮助外国游客学习基本中文短语的Web应用。
+
+## 功能特点
+
+- 场景化学习：按不同场景（交通、酒店、餐厅等）分类展示常用短语
+- 中英对照：提供中文、拼音和英文翻译
+- 音频播放：标准发音示范
+- 收藏功能：可以收藏常用短语
+- 暗色模式：支持明暗主题切换
+
+## 技术栈
+
+- Next.js 14
+- React
+- TypeScript
+- Tailwind CSS
+
+## 本地开发
+
+1. 克隆项目
+```bash
+git clone [repository-url]
+cd learnenglish
+```
+
+2. 安装依赖
+```bash
+npm install
+```
+
+3. 启动开发服务器
+```bash
+npm run dev
+```
+
+4. 打开浏览器访问 http://localhost:3000
+
+## 待开发功能
+
+- [ ] 语音识别练习
+- [ ] 听力练习
+- [ ] 学习进度追踪
+- [ ] 情境对话练习
+- [ ] 文化背景说明
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
